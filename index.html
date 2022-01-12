@@ -111,30 +111,26 @@ const addWorkersForm = Vue.component("add-workers-form", {
 const filterWorkersForm = Vue.component("filter-workers-form", {
   template: `<div>
     <input v-model="filters.name" style="width: 29%; height: 5%;" type="text" class="addFirstName" placeholder="Worker"></input>
-    <select v-model="filters.department" multiple="true" style="width: 22.5%; height: 5%;" name="departments" id="departments" placeholder="Deparment">
-      <option value="">Select a department</option>
-      <option value="IT">IT</option>
-      <option value="Sales">Sales</option>
-      <option value="Administration">Administration</option>
-    </select>
+    <input v-model="filters.departments" type="checkbox" value="IT">IT
+    <input v-model="filters.departments" type="checkbox" value="Sales">Sales
+    <input v-model="filters.departments" type="checkbox" value="Administration">Administration
     <input v-model="filters.minSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="min. salary"></input>
     <input v-model="filters.maxSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="max. salary"></input>
-    <button @click="filterWorkers" style="width: 15%; height: 5%;" type="button">Filter Workers</button>
+    <button @click="setFilters" style="width: 15%; height: 5%;" type="button">Filter Workers</button>
   </div>`,
   data() {
     return {
      filters: {
        name: '',
-       department: undefined,
+       departments: [],
        minSalary: undefined,
        maxSalary: undefined,
      }
     }
   },
   methods: {
-    filterWorkers() {
+    setFilters() {
       this.$emit("input", {...this.filters})
-      // console.log(this.filters)
     }
   }
 })
@@ -196,6 +192,7 @@ new Vue({
     filteredWorkers() {
       return this.workerList
         .filter(this.filterByName)
+        .filter(this.filterByDepartments)
     }
   },
   methods: {
@@ -204,14 +201,15 @@ new Vue({
     },
     setFilters(allFilters) {
       this.filters = allFilters
-      console.log(this.filteredWorkers) 
+      console.log(this.filters.departments) 
     },
     filterByName(w) {
       if (!this.filters.name) return true
       return w.firstName.includes(this.splitedName[0] || this.splitedName[1]) || w.lastName.includes(this.splitedName[0] || this.splitedName[1])
     },
-    filterByDepartment() {
-    
+    filterByDepartments(w) {
+      if (!this.filters.departments) return true
+      return w.department === this.filters.departments[0] || w.department === this.filters.departments[1] || w.department === this.filters.departments[2]
     }
   }
 });
