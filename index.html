@@ -121,7 +121,7 @@ const filterWorkersForm = Vue.component("filter-workers-form", {
   data() {
     return {
      filters: {
-       name: '',
+       name: "",
        departments: [],
        minSalary: undefined,
        maxSalary: undefined,
@@ -183,9 +183,6 @@ new Vue({
     ],
   },
   computed: {
-    splitedName() {
-      return (this.filters.name || '').split(" ")
-    },
     salarySum() {
       return this.workerList.reduce((acc, i) => acc + parseFloat(i.salary.amount || 0,10), 0);
     },
@@ -205,11 +202,13 @@ new Vue({
     },
     filterByName(w) {
       if (!this.filters.name) return true
-      return w.firstName.includes(this.splitedName[0] || this.splitedName[1]) || w.lastName.includes(this.splitedName[0] || this.splitedName[1])
+      const loweredName = `${w.firstName} ${w.lastName}`.toLowerCase()
+      return loweredName.includes(this.filters.name.toLowerCase())
     },
     filterByDepartments(w) {
-      if (!this.filters.departments) return true
-      return w.department === this.filters.departments[0] || w.department === this.filters.departments[1] || w.department === this.filters.departments[2]
+      const normalizedDepArray = this.filters.departments || []
+      if (!normalizedDepArray.length) return true
+      return normalizedDepArray.includes(w.department)
     }
   }
 });
