@@ -34,8 +34,10 @@
         </div>            
       </div>
       <h2>Workers</h2>
-      <div id="add-workers-form">
+      <div id="filters-workers-form">
         <filter-workers-form  @input="setFilters" style="width: 100%;"></filter-workers-form>
+      </div>
+      <div id="add-workers-form">
         <add-workers-form  @input="addWorker" style="width: 100%;"></add-workers-form>
       </div>
       <table style="width: 70%;" border="1">
@@ -56,7 +58,9 @@
           </tr>
         </tfoot>
       </table>
+      <salary-per-department :departments="allDepartments" style="width: 100%; height: 10px; background-color: red;"></salary-per-department>
     </div>
+  </div>
 
     <script>
 function getEmptyWorker () {
@@ -89,6 +93,7 @@ const addWorkersForm = Vue.component("add-workers-form", {
     </select>
     <input v-model="person.salary.amount" style="width: 8.5% ; height: 5%;" type="text" class="addSalary" placeholder="Salary"></input>
     <select v-model="person.salary.currency" style="width: 8%; height: 5%; margin-right: 8px;" name="currency" id="currency">
+      <option value="">Currency</option>
       <option value="USD">USD</option>
       <option value="PLN">PLN</option>
       <option value="EUR">EUR</option>
@@ -114,8 +119,8 @@ const filterWorkersForm = Vue.component("filter-workers-form", {
     <input v-model="filters.departments" type="checkbox" value="IT">IT
     <input v-model="filters.departments" type="checkbox" value="Sales">Sales
     <input v-model="filters.departments" type="checkbox" value="Administration">Administration
-    <input v-model="filters.minSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="min. salary"></input>
-    <input v-model="filters.maxSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="max. salary"></input>
+    <input v-model="filters.minSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="min. Salary"></input>
+    <input v-model="filters.maxSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="max. Salary"></input>
     <button @click="setFilters" style="width: 15%; height: 5%;" type="button">Filter Workers</button>
   </div>`,
   data() {
@@ -135,6 +140,40 @@ const filterWorkersForm = Vue.component("filter-workers-form", {
   }
 })
 
+const salaryPerDepartment = Vue.component("salary-per-department", {
+  template: `<div>
+    <table style="width: 70%;" border="1">
+        <tbody>
+          <tr v-for="(department, index) in departments" :key="index">
+            <td>{{department}}{{ summary:}}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"></td>
+            <td>Summary</td>
+            <td>{{ salarySum }}</td>
+          </tr>
+        </tfoot>
+      </table>
+  </div>`,
+  data() {
+    return {
+    }
+  },
+  props: {
+    departments: {
+      type: Array,
+      required: false,
+    }
+  },
+  methods: {
+    setFilters() {
+      this.$emit("input", {...this.filters})
+    }
+  }
+})
+
 new Vue({
   el: "#app",
   name: "main",
@@ -145,6 +184,7 @@ new Vue({
   },
   data: {
     filters: {},
+    allDepartments: ["IT", "Sales", "Administration"],
     workerList: [
       { "firstName": "John", "lastName": "Smith", "department": "IT", "salary": { "amount": 3000, "currency": "USD" }, "id": Math.random(), },
       { "firstName": "Jane", "lastName": "Doe", "department": "IT", "salary": { "amount": 3000.50, "currency": "USD" }, "id": Math.random() },
@@ -165,11 +205,11 @@ new Vue({
       },
       { 
         "title": "Add search form", 
-        "completed": false,
+        "completed": true,
         "subtaskList": [
-          { "title": "person (text)", "completed": false },
-          { "title": "department (multiple choice)", "completed": false },
-          { "title": "salary (range)", "completed": false }
+          { "title": "person (text)", "completed": true },
+          { "title": "department (multiple choice)", "completed": true},
+          { "title": "salary (range)", "completed": true }
         ]
       },
       { 
@@ -184,12 +224,13 @@ new Vue({
   },
   computed: {
     salarySum() {
-      return this.workerList.reduce((acc, i) => acc + parseFloat(i.salary.amount || 0,10), 0);
+      return this.filteredWorkers.reduce((acc, i) => acc + parseFloat(i.salary.amount || 0,10), 0);
     },
     filteredWorkers() {
       return this.workerList
         .filter(this.filterByName)
         .filter(this.filterByDepartments)
+        .filter(this.filterBySalaryRange)
     }
   },
   methods: {
@@ -198,7 +239,7 @@ new Vue({
     },
     setFilters(allFilters) {
       this.filters = allFilters
-      console.log(this.filters.departments) 
+      console.log(this.filterBySalaryRange) 
     },
     filterByName(w) {
       if (!this.filters.name) return true
@@ -209,6 +250,11 @@ new Vue({
       const normalizedDepArray = this.filters.departments || []
       if (!normalizedDepArray.length) return true
       return normalizedDepArray.includes(w.department)
+    },
+    filterBySalaryRange(w) {
+      const normalizedMinimalSalary = this.filters.minSalary || 0
+      const normalizedMaxSalary = this.filters.maxSalary || 10000000
+      return normalizedMinimalSalary <= w.salary.amount && normalizedMaxSalary >= w.salary.amount
     }
   }
 });
