@@ -31,7 +31,7 @@
             <li>&lt;datalist&gt;</li>
           </ol>
         </div>            
-      <h2>Workers</h2>
+      <div class="workers__title">Workers</div>
       <div id="filters-workers-form">
         <filter-workers-form  @input="setFilters"></filter-workers-form>
       </div>
@@ -41,7 +41,7 @@
       <table class="workers__table" border='1'>
         <tbody>
           <thead>
-            <td></td>
+           <th></th>
             <th v-for="(i, index) in workersInfo" class="workers__table--info" >
               {{i.minorHeader}}
             <th/>
@@ -62,7 +62,7 @@
           </tr>
         </tfoot>
       </table>
-      <salary-per-department :workers="workerList" style="width: 100%; height: 10px; background-color: red;"></salary-per-department>
+      <salary-per-department :workers="workerList"></salary-per-department>
     </div>
   </div>
 
@@ -87,23 +87,24 @@ const TaskItem = Vue.component('task-item', {
 });
 const addWorkersForm = Vue.component("add-workers-form", {
   template: `
-  <div class="addWorkers__form">
-    <input v-model="person.firstName" class="addWorkers__form--firstName" type="text" placeholder="First Name"></input>
-    <input v-model="person.lastName" type="text" class="addWorkers__form--lastName" placeholder="Last Name"></input>
-    <select v-model="person.department" name="departments" class="addWorkers__form--department" placeholder="Deparment">
-      <option value="">Select a department</option>
+  <div class="workers__form">
+    <div class="workers__usageTitle">Add Worker</div>
+    <input v-model="person.firstName" class="workers__formItem" type="text" placeholder="First Name"></input>
+    <input v-model="person.lastName" class="workers__formItem" type="text" placeholder="Last Name"></input>
+    <select v-model="person.department" class="workers__formItem" name="departments" placeholder="Deparment">
+      <option value="">Department</option>
       <option value="IT">IT</option>
       <option value="Sales">Sales</option>
       <option value="Administration">Administration</option>
     </select>
-    <input v-model="person.salary.amount" type="text" class="addSalary" placeholder="Salary"></input>
-    <select v-model="person.salary.currency" name="currency" id="currency">
+    <input v-model="person.salary.amount" class="workers__formItem" type="text" placeholder="Salary"></input>
+    <select v-model="person.salary.currency" class="workers__formItem" name="currency">
       <option value="">Currency</option>
       <option value="USD">USD</option>
       <option value="PLN">PLN</option>
       <option value="EUR">EUR</option>
     </select>
-    <button @click="addWorker" type="button">Add worker</button>
+    <button @click="addWorker" class="workers__formItem--addButton button__primary" type="button">Add Worker</button>
   </div>`,
   data() {
     return{
@@ -119,14 +120,24 @@ const addWorkersForm = Vue.component("add-workers-form", {
  
 })
 const filterWorkersForm = Vue.component("filter-workers-form", {
-  template: `<div>
-    <input v-model="filters.name" style="width: 29%; height: 5%;" type="text" class="addFirstName" placeholder="Worker"></input>
-    <input v-model="filters.departments" type="checkbox" value="IT">IT
-    <input v-model="filters.departments" type="checkbox" value="Sales">Sales
-    <input v-model="filters.departments" type="checkbox" value="Administration">Administration
-    <input v-model="filters.minSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="min. Salary"></input>
-    <input v-model="filters.maxSalary" style="width: 7.9% ; height: 5%;" type="text" class="addSalary" placeholder="max. Salary"></input>
-    <button @click="setFilters" style="width: 15%; height: 5%;" type="button">Filter Workers</button>
+  template: `<div class="workers__form workers__form--borderBottom">
+    <div class="workers__usageTitle">Filters</div>
+    <input v-model="filters.name" class="workers__formItem" type="text" placeholder="Worker"></input>
+    <div class="workers__checkbox--Container">
+    <label for="IT">IT</label>
+    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="IT" name="IT"></input>
+    </div>
+    <div class="workers__checkbox--Container">
+    <label for="Sales">Sales</label>
+    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Sales" name="Sales"></input>
+    </div>
+    <div class="workers__checkbox--Container">
+    <label for="Administration">Administration</label>
+    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Administration" name="Administration"></input>
+    </div>
+    <input v-model="filters.minSalary" class="workers__formItem" type="text" placeholder="min. Salary"></input>
+    <input v-model="filters.maxSalary" class="workers__formItem" type="text" placeholder="max. Salary"></input>
+    <button @click="setFilters" class="workers__formItem--addButton button__primary" type="button">Filter Workers</button>
   </div>`,
   data() {
     return {
@@ -146,22 +157,19 @@ const filterWorkersForm = Vue.component("filter-workers-form", {
 })
 
 const salaryPerDepartment = Vue.component("salary-per-department", {
-  template: `<div>
-    <h3>Salary per Department</h3>
+  template: `<div class="workers__form workers__form--salaryPerDepartment">
+    <div class="workers__usageTitle">Salary per Department</div>
     <table style="width: 70%;" border="1">
         <tbody>
+          <tr>
+            <th class="workers__table--info">Department</th>
+            <th class="workers__table--info">Summary</th>
+          </tr>
           <tr v-for="(department, index) in uniqueDepartments" :key="index">
             <td>{{department}}</td>
             <td>{{salaryOfDepartment(department)}}</td>
           </tr>
         </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="3"></td>
-            <td>Summary</td>
-          </tr>
-        </tfoot>
-        <button style="width: 15px;" @click="test"></button>
       </table>
   </div>`,
   data() {
@@ -242,7 +250,7 @@ new Vue({
       },
       {
         "title": "Other improvements (feel free to add other improvements)",
-        "completed": false
+        "completed": true
       }
     ],
   },
