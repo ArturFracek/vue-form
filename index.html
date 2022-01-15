@@ -12,17 +12,17 @@
   <body>
     <div id="app">
       <div class="guidelines">
-          <h1>TODO</h1> 
-          <ol>
-            <template v-for="task in taskList">
-              <task-item :task="task">
-                <ol type="a" v-if="task.subtaskList">
-                  <template v-for="subtask in task.subtaskList">
-                    <task-item :task="subtask"></task-item>  
-                  </template>
-                </ol> 
-              </task-item>  
-            </template>
+        <h1>TODO</h1> 
+        <ol>
+          <template v-for="task in taskList">
+            <task-item :task="task">
+              <ol type="a" v-if="task.subtaskList">
+                <template v-for="subtask in task.subtaskList">
+                  <task-item :task="subtask"></task-item>  
+                </template>
+              </ol> 
+            </task-item>  
+          </template>
           </ol>
           <ol>
             <h2>Hints</h2> 
@@ -30,7 +30,8 @@
             browser-sync --watch .
             <li>&lt;datalist&gt;</li>
           </ol>
-        </div>            
+      </div>
+      <div class="workers__title">Artur Frącek</div>            
       <div class="workers__title">Workers</div>
       <div id="filters-workers-form">
         <filter-workers-form  @input="setFilters"></filter-workers-form>
@@ -41,8 +42,7 @@
       <table class="workers__table" border='1'>
         <tbody>
           <thead>
-           <th></th>
-            <th v-for="(i, index) in workersInfo" class="workers__table--info" >
+            <th v-for="(i, index) in workersInfo" class="workers__table--info" :key="index">
               {{i.minorHeader}}
             <th/>
           </thead>
@@ -66,7 +66,7 @@
     </div>
   </div>
 
-    <script>
+<script>
 function getEmptyWorker () {
   return {
     firstName: "",
@@ -85,6 +85,7 @@ const TaskItem = Vue.component('task-item', {
   },
   template: '<li>{{task.title}} {{ task.completed ? "✅" : "❌"}}<slot name="default"></slot></li>'
 });
+//Adding users form component
 const addWorkersForm = Vue.component("add-workers-form", {
   template: `
   <div class="workers__form">
@@ -117,23 +118,24 @@ const addWorkersForm = Vue.component("add-workers-form", {
       this.person = getEmptyWorker()
     }
   }
- 
+ //Filters form component
 })
 const filterWorkersForm = Vue.component("filter-workers-form", {
-  template: `<div class="workers__form workers__form--borderBottom">
+  template: 
+  `<div class="workers__form workers__form--borderBottom">
     <div class="workers__usageTitle">Filters</div>
     <input v-model="filters.name" class="workers__formItem" type="text" placeholder="Worker"></input>
     <div class="workers__checkbox--Container">
-    <label for="IT">IT</label>
-    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="IT" name="IT"></input>
+      <label for="IT">IT</label>
+      <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="IT" name="IT"></input>
     </div>
     <div class="workers__checkbox--Container">
-    <label for="Sales">Sales</label>
-    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Sales" name="Sales"></input>
+      <label for="Sales">Sales</label>
+      <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Sales" name="Sales"></input>
     </div>
     <div class="workers__checkbox--Container">
-    <label for="Administration">Administration</label>
-    <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Administration" name="Administration"></input>
+      <label for="Administration">Administration</label>
+      <input v-model="filters.departments" class="workers__formItem workers__formItem--checkbox" type="checkbox" value="Administration" name="Administration"></input>
     </div>
     <input v-model="filters.minSalary" class="workers__formItem" type="text" placeholder="min. Salary"></input>
     <input v-model="filters.maxSalary" class="workers__formItem" type="text" placeholder="max. Salary"></input>
@@ -141,36 +143,37 @@ const filterWorkersForm = Vue.component("filter-workers-form", {
   </div>`,
   data() {
     return {
-     filters: {
-       name: "",
-       departments: [],
-       minSalary: undefined,
-       maxSalary: undefined,
+      filters: {
+        name: "",
+        departments: [],
+        minSalary: undefined,
+        maxSalary: undefined,
+      }
      }
-    }
-  },
+   },
   methods: {
     setFilters() {
       this.$emit("input", {...this.filters})
     }
   }
 })
-
+//Table with every department's salary displayed component
 const salaryPerDepartment = Vue.component("salary-per-department", {
-  template: `<div class="workers__form workers__form--salaryPerDepartment">
+  template: 
+  `<div class="workers__form workers__form--salaryPerDepartment">
     <div class="workers__usageTitle">Salary per Department</div>
     <table style="width: 70%;" border="1">
-        <tbody>
-          <tr>
-            <th class="workers__table--info">Department</th>
-            <th class="workers__table--info">Summary</th>
-          </tr>
-          <tr v-for="(department, index) in uniqueDepartments" :key="index">
-            <td>{{department}}</td>
-            <td>{{salaryOfDepartment(department)}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <tbody>
+        <tr>
+          <th class="workers__table--info">Department</th>
+          <th class="workers__table--info">Summary</th>
+        </tr>
+        <tr v-for="(department, index) in uniqueDepartments" :key="index">
+          <td>{{department}}</td>
+          <td>{{salaryOfDepartment(department)}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>`,
   data() {
     return {
@@ -200,7 +203,7 @@ const salaryPerDepartment = Vue.component("salary-per-department", {
     }
   }
 })
-
+//Main Vue Component
 new Vue({
   el: "#app",
   name: "main",
@@ -211,6 +214,7 @@ new Vue({
   },
   data: {
     workersInfo: [
+    {"minorHeader": ''},
     {"minorHeader": "First Name"},
     {"minorHeader": "Last Name"},
     {"minorHeader": "Department"},
@@ -258,6 +262,7 @@ new Vue({
     salarySum() {
       return this.filteredWorkers.reduce((acc, i) => acc + parseFloat(i.salary.amount || 0,10), 0);
     },
+    //Chaining filters
     filteredWorkers() {
       return this.workerList
         .filter(this.filterByName)
@@ -265,9 +270,10 @@ new Vue({
         .filter(this.filterBySalaryRange)
     }
   },
+  //Setting filter callback functions
   methods: {
     addWorker(worker) {
-     this.workerList.push(worker)
+      this.workerList.push(worker)
     },
     setFilters(allFilters) {
       this.filters = allFilters
@@ -290,7 +296,5 @@ new Vue({
     }
   }
 });
-    </script>
-  
-
+</script>
 </body></html>
