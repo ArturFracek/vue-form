@@ -12,7 +12,6 @@
   <body>
     <div id="app">
       <div class="guidelines">
-        <div>
           <h1>TODO</h1> 
           <ol>
             <template v-for="task in taskList">
@@ -32,18 +31,23 @@
             <li>&lt;datalist&gt;</li>
           </ol>
         </div>            
-      </div>
       <h2>Workers</h2>
       <div id="filters-workers-form">
-        <filter-workers-form  @input="setFilters" style="width: 100%;"></filter-workers-form>
+        <filter-workers-form  @input="setFilters"></filter-workers-form>
       </div>
       <div id="add-workers-form">
-        <add-workers-form  @input="addWorker" style="width: 100%;"></add-workers-form>
+        <add-workers-form  @input="addWorker"></add-workers-form>
       </div>
-      <table class="workers__table" >
+      <table class="workers__table" border='1'>
         <tbody>
+          <thead>
+            <td></td>
+            <th v-for="(i, index) in workersInfo" class="workers__table--info" >
+              {{i.minorHeader}}
+            <th/>
+          </thead>
           <tr v-for="(worker, index) in filteredWorkers" :key="index">
-            <td>{{index+1}}</td>
+            <td style="width: 8px;" >{{index+1 +"."}}</td>
             <td>{{worker.firstName}}</td>
             <td>{{worker.lastName}}</td>
             <td>{{worker.department}}</td>
@@ -82,23 +86,24 @@ const TaskItem = Vue.component('task-item', {
   template: '<li>{{task.title}} {{ task.completed ? "✅" : "❌"}}<slot name="default"></slot></li>'
 });
 const addWorkersForm = Vue.component("add-workers-form", {
-  template: `<div>
-    <input v-model="person.firstName" style="width: 14%; height: 5%;" type="text" class="addFirstName" placeholder="First Name"></input>
-    <input v-model="person.lastName" style="width: 14%; height: 5%;" type="text" class="addLastName" placeholder="Last Name"></input>
-    <select v-model="person.department" style="width: 22.5%; height: 5%;" name="departments" id="departments" placeholder="Deparment">
+  template: `
+  <div class="addWorkers__form">
+    <input v-model="person.firstName" class="addWorkers__form--firstName" type="text" placeholder="First Name"></input>
+    <input v-model="person.lastName" type="text" class="addWorkers__form--lastName" placeholder="Last Name"></input>
+    <select v-model="person.department" name="departments" class="addWorkers__form--department" placeholder="Deparment">
       <option value="">Select a department</option>
       <option value="IT">IT</option>
       <option value="Sales">Sales</option>
       <option value="Administration">Administration</option>
     </select>
-    <input v-model="person.salary.amount" style="width: 8.5% ; height: 5%;" type="text" class="addSalary" placeholder="Salary"></input>
-    <select v-model="person.salary.currency" style="width: 8%; height: 5%; margin-right: 8px;" name="currency" id="currency">
+    <input v-model="person.salary.amount" type="text" class="addSalary" placeholder="Salary"></input>
+    <select v-model="person.salary.currency" name="currency" id="currency">
       <option value="">Currency</option>
       <option value="USD">USD</option>
       <option value="PLN">PLN</option>
       <option value="EUR">EUR</option>
     </select>
-    <button @click="addWorker" style="width: 15%; height: 5%;" type="button">Add worker</button>
+    <button @click="addWorker" type="button">Add worker</button>
   </div>`,
   data() {
     return{
@@ -197,6 +202,12 @@ new Vue({
     filterWorkersForm,
   },
   data: {
+    workersInfo: [
+    {"minorHeader": "First Name"},
+    {"minorHeader": "Last Name"},
+    {"minorHeader": "Department"},
+    {"minorHeader": "Salary"},
+  ],
     filters: {},
     workerList: [
       { "firstName": "John", "lastName": "Smith", "department": "IT", "salary": { "amount": 3000, "currency": "USD" }},

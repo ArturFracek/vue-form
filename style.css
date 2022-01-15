@@ -1,8 +1,30 @@
 .guidelines {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
+  height: 50%;
 }
 
 .workers__table {
+  border: 2px double black;
   width: 100%;
+}
+
+.workers__table--info {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.addWorkers__form {
+  margin-right: auto;
+  margin-left: auto;
+  width: 50%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.addWorkers__form--firstName {
+
 }
